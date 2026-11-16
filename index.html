@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Évaluation de fin de Jour 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Charte BASSETTI : orange EC6408, anthracite 423435 */
+  --bg:#F1EFEE;--surface:#FFFFFF;--field:#FAF8F7;--ink:#423435;--muted:#646363;--line:#DED7D5;
+  --accent:#EC6408;--accent-ink:#FFFFFF;--accent-soft:#FDF0E4;--accent-mid:#F6AD83;
+  --ok:#EC6408;--ok-soft:#FDF0E4;--warn:#878786;--warn-soft:#F2EFEE;--err:#B3261E;
+  --brand:#423435;--radius:5px;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#191415;--surface:#241E1F;--field:#1E1819;--ink:#F1EDEB;--muted:#A99E9C;--line:#3B3233;
+    --accent:#FF7A1F;--accent-ink:#2A2223;--accent-soft:#3A2A1E;--accent-mid:#B5753F;
+    --ok:#FF7A1F;--ok-soft:#36261C;--warn:#8B8180;--warn-soft:#2B2526;--err:#F2B8B5;
+    --brand:#120E0F;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* Bandeau de marque */
+.brand{background:#FFFFFF;border-bottom:3px solid #EC6408}
+.brand-in{max-width:720px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.brand img{height:52px;width:auto;display:block;flex:none}
+.brand .tag{margin-left:auto;color:#878786;font-size:12px;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+@media (max-width:560px){.brand .tag{display:none}.brand img{height:44px}}
+
+.wrap{max-width:720px;margin:0 auto;padding:36px 20px 72px}
+header{margin-bottom:26px}
+h1{font-size:30px;line-height:1.2;font-weight:600;margin:0;letter-spacing:-.01em}
+h1::after{content:"";display:block;width:64px;height:3px;background:var(--accent);margin-top:12px}
+.intro{color:var(--muted);margin:14px 0 0;max-width:62ch;white-space:pre-line}
+h2{font-size:21px;line-height:1.35;font-weight:600;margin:0 0 18px}
+h3{font-size:17px;font-weight:600;margin:30px 0 12px;color:var(--ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+@media (max-width:520px){.panel{padding:20px}.wrap{padding-top:24px}h1{font-size:25px}}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+
+/* Formulaire */
+.field{margin-bottom:20px}
+.lbl{display:block;font-weight:500;margin-bottom:6px}
+.req{color:var(--err)}
+.help{font-size:14px;color:var(--muted);margin:-2px 0 8px}
+input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{
+  width:100%;font:inherit;color:inherit;background:var(--field);
+  border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+textarea{min-height:96px;resize:vertical}
+select:disabled{opacity:1;color:var(--ink);background:var(--bg);cursor:default}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+.err-msg{color:var(--err);font-size:14px;margin-top:6px}
+
+/* Boutons */
+.btn{font:inherit;font-weight:500;border-radius:var(--radius);padding:11px 22px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
+.actions.end{justify-content:flex-end}
+.send-err{color:var(--err);font-size:14px;margin-top:14px}
+
+/* Questions */
+.progress{margin-bottom:24px}
+.count{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-size:14px;color:var(--muted);margin-bottom:8px}
+.chrono{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);transition:width .35s ease}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8px}
+.multi{font-size:14px;color:var(--muted);margin:0 0 16px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;cursor:pointer;background:var(--surface);position:relative}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin:3px 0 0;width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.opt input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt .key{position:absolute;right:10px;top:10px;font-size:11px;color:var(--muted);
+  border:1px solid var(--line);border-radius:3px;padding:0 5px;line-height:17px}
+.opt.on .key{border-color:var(--accent);color:var(--accent)}
+@media (max-width:560px){.opt .key{display:none}}
+.opt.idk{border-style:dashed;color:var(--muted)}
+.opt.idk.on{color:var(--ink)}
+.hint{font-size:13px;color:var(--muted);margin:14px 0 0}
+
+/* Reprise de test */
+.resume{border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 var(--radius) var(--radius) 0;padding:16px 18px;margin-bottom:22px}
+.resume p{margin:0 0 10px}
+.resume .actions{margin-top:0}
+
+/* Bilan */
+.result-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;margin-bottom:22px}
+.score{font-size:60px;font-weight:600;line-height:1;letter-spacing:-.02em;color:var(--accent)}
+.score small{font-size:26px;font-weight:500;margin-left:2px}
+.lvl-name{font-size:20px;font-weight:600}
+.lvl-code{color:var(--muted)}
+.scale{display:grid;gap:4px;margin-bottom:6px}
+.scale span{height:10px;border-radius:2px;background:var(--line)}
+.scale span.past{background:var(--accent-mid)}
+.scale span.now{background:var(--accent)}
+.scale-labels{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.scale-labels b{color:var(--ink);font-weight:600}
+.axis{display:grid;grid-template-columns:minmax(0,1fr) 120px 44px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.axis:last-of-type{border-bottom:0}
+.axis .track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.axis .track i{display:block;height:100%;width:0;background:var(--accent-mid);transition:width .6s ease}
+.axis .track i.hi{background:var(--accent)}
+.axis .track i.lo{background:#C4B9B9}
+.axis .pct{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.axis{grid-template-columns:minmax(0,1fr) 44px}.axis .track{grid-column:1 / -1;order:3}}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.items li{border-radius:var(--radius);padding:12px 14px;border-left:3px solid transparent}
+.items.good li{background:var(--ok-soft);border-left-color:var(--ok)}
+.items.todo li{background:var(--warn-soft);border-left-color:var(--warn)}
+.items .mod{display:block;font-size:14px;margin-top:2px;color:var(--muted)}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:14px;color:var(--muted)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.linkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fin{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);white-space:pre-line}
+.ref{font-size:13px;color:var(--muted);margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.corr{border-top:1px solid var(--line);padding:14px 0}
+.corr p{margin:4px 0}
+.corr .verdict{font-weight:600}
+.corr .verdict.ok{color:var(--accent)}
+.corr .verdict.ko{color:var(--muted)}
+/* Exercice de rédaction */
+.brief{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:0 0 20px}
+textarea.prompt{min-height:150px}
+textarea[readonly]{background:var(--bg)}
+.crit{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.crit input{margin:4px 0 0;width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.crit b{display:block;font-weight:600}
+.crit span{font-size:14px;color:var(--muted)}
+.model{border:1px solid var(--line);background:var(--field);border-radius:var(--radius);padding:14px 16px;margin:18px 0 6px;white-space:pre-line}
+.model h4{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* Bilan au format KPI */
+.bilan .b-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,4.6vw,2.4rem);line-height:1.1;margin-bottom:10px}
+.b-lede{color:var(--muted);max-width:62ch;margin-bottom:24px}
+.b-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;align-items:stretch;margin-bottom:8px}
+@media (max-width:620px){.b-head{grid-template-columns:1fr}}
+.badge{border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 14px;background:var(--field)}
+.badge .lvl{font-family:var(--serif);font-size:2.2rem;line-height:1;color:var(--accent)}
+.badge .b-score{font-family:var(--mono);font-size:13px;color:var(--muted);margin:6px 0 14px}
+.ladder{display:grid;gap:4px}
+.rung{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 10px;border-radius:3px;background:var(--bg);color:var(--muted)}
+.rung.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.rung.was{outline:1px dashed var(--accent-mid);color:var(--ink)}
+.rung em{font-style:normal;font-family:var(--mono);font-size:11px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:var(--radius)}
+.kpis div{padding:14px 16px;border-bottom:1px solid var(--line)}
+.kpis div:nth-child(odd){border-right:1px solid var(--line)}
+.kpis div:nth-last-child(-n+2){border-bottom:0}
+.kpis b{display:block;font-family:var(--mono);font-weight:500;font-size:1.7rem;line-height:1.15;color:var(--accent)}
+.kpis span{font-size:12.5px;color:var(--muted)}
+.scale-kpi{padding:12px 0 6px;border-bottom:1px solid var(--line)}
+.scale-kpi:last-of-type{border-bottom:0}
+.scale-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+.scale-name{font-weight:500}
+.scale-val{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.delta{display:inline-block;margin-left:8px;padding:0 6px;border-radius:3px;font-weight:500}
+.delta.up{background:var(--accent);color:var(--accent-ink)}
+.delta.down{background:var(--warn-soft);color:var(--ink)}
+.delta.flat{background:var(--bg);color:var(--muted)}
+.gauge{position:relative;height:10px;background:var(--line);border-radius:2px}
+.gauge i{display:block;height:100%;width:0;border-radius:2px;transition:width .6s ease}
+.gauge.g-ok i{background:var(--accent)}
+.gauge.g-mid i{background:var(--accent-mid)}
+.gauge.g-low i{background:#C4B9B9}
+.gauge .t0mark{position:absolute;top:-4px;width:2px;height:18px;margin-left:-1px;background:var(--ink)}
+.ticks{position:relative;height:16px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.ticks span{position:absolute;top:3px;transform:translateX(-1px)}
+.notions{margin:0;padding-left:18px;columns:2;column-gap:28px;font-size:14px}
+@media (max-width:620px){.notions{columns:1}}
+.notions li{break-inside:avoid;margin-bottom:4px}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+@media print{
+  .gauge i,.gauge .t0mark,.rung.on,.delta.up{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Impression du bilan */
+@media print{
+  body{background:#fff}
+  .brand{border-bottom:3px solid #EC6408}
+  .noprint,.topbar,.actions{display:none!important}
+  .wrap{padding:0 0 20px}
+  .panel{border:0;padding:0}
+  .items li{border:1px solid #DED7D5}
+  .axis .track i{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="brand">
+  <div class="brand-in">
+    <img src="data:image/png;base64,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" alt="BASSETTI Academy">
+    <span class="tag">Évaluation · Jour 1</span>
+  </div>
+</div>
+<div class="wrap">
+  <header>
+    <h1 id="titre">Évaluation de fin de Jour 1</h1>
+    <p class="intro" id="intro" hidden></p>
+    <div class="topbar" id="session" hidden>
+      <span id="session-nom"></span>
+      <button type="button" class="linkbtn" id="deconnexion">Se déconnecter</button>
+    </div>
+  </header>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =====================================================================
+     1. CONFIGURATION – c’est la seule partie à modifier
+     ===================================================================== */
+
+  const CONFIG = {
+    // Lien prérempli du NOUVEAU Google Form « Évaluation Jour 1 » (voir la liste des mots-clés dans le guide).
+    // Ne pas réutiliser le formulaire du T0 : les colonnes sont différentes.
+    lienPrerempli: "https://docs.google.com/forms/d/e/1FAIpQLSdZy315Rti84CPO9qJhIGefrxVBt0gtpFSeTZqwVyGIm-vK-g/viewform?usp=pp_url&entry.1505189592=nom&entry.122541461=prenom&entry.1621428121=email&entry.2037222251=direction&entry.670372512=poste&entry.1924315848=identifiant&entry.2061203833=score&entry.529599984=niveau&entry.1354165302=cult&entry.619882756=prat&entry.1178497411=prom&entry.739710714=crit&entry.1842525040=secu&entry.1593209485=meti&entry.1858911726=t0_score&entry.1459011907=progression&entry.1706214570=competences&entry.375177946=progres&entry.240626899=a_consolider&entry.459081186=notions_a_revoir&entry.527053049=prompt_texte&entry.1643672420=prompt_auto&entry.908009745=retenu&entry.470852544=flou&entry.412639381=detail&entry.676556437=duree",
+
+    titre: "Évaluation de fin de Jour 1",
+    intro: "Cette évaluation dure environ 20 minutes. Elle porte sur les notions vues aujourd’hui et mesure, compétence par compétence, le chemin parcouru depuis votre test de positionnement.\nSi vous ne connaissez pas la réponse, choisissez « Je ne sais pas » : c’est plus utile qu’une réponse au hasard pour adapter le Jour 2. Vos réponses sont enregistrées au fur et à mesure.",
+    messageFin: "Merci. Vos réponses et vos retours servent à ajuster le contenu du Jour 2 : les notions les moins acquises dans votre groupe seront reprises en ouverture de séance.",
+
+    melangerQuestions: false,   // true : ordre des questions aléatoire
+    melangerOptions: false,     // true : ordre des réponses aléatoire
+    jeNeSaisPas: true,          // true : ajoute la réponse « Je ne sais pas » (comptée fausse)
+    afficherCorrection: true,   // true : le candidat voit la correction à la fin
+    seuilFort: 70,              // % minimum pour un point fort
+    seuilFaible: 50             // % en dessous duquel une compétence est à consolider
+  };
+
+  // Mot de passe commun, identique pour tous les participants (en plus du mot de passe personnel).
+  // Ne jamais écrire le mot de passe ici : seulement son empreinte, produite par
+  // generateur_empreintes.html avec l’identifiant ci-dessous.
+  // accepte: false  → seul le mot de passe personnel permet de se connecter.
+  const COMPTE_COMMUN = {
+    identifiant: "test",
+    empreinte: "25deaac135aa323dc666c2d5c4869b2d76f7bae6b404cb835260c974707dc675",
+    accepte: true
+  };
+
+  // t0 = scores du test de positionnement (11/11/2026), repris du fichier Résultats_T0, pour la comparaison du bilan.
+  // Participants (liste transmise par Rose Blanche). L’adresse e-mail est choisie à la connexion.
+  // empreinte = mot de passe personnel, généré avec "prénom nom" en minuscules comme
+  // identifiant (ex. "hajer zaga"). Ne jamais écrire le mot de passe lui-même ici.
+  const PARTICIPANTS = [
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Salem", nom: "ZAOUALI", poste: "Directeur Audit interne Groupe", email: "salem.zaouali@warda.tn", empreinte: "b55acbe02a261f6f0ea1b636c90ba00f15454561a85863c1af9314b4910a7a36", t0: { score: 73, cult: 60, prat: 60, prom: 60, crit: 100, secu: 60, meti: 100 } },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Mohamed", nom: "HADJ AMMAR", poste: "Responsable Audit interne site Nord", email: "mohamed.hadjammar@rose-blanche.com", empreinte: "f571fe15b2b087edd15287a803562afc9520e240d53e8b7eb418d32cd51d53e0", t0: { score: 63, cult: 20, prat: 40, prom: 60, crit: 100, secu: 60, meti: 100 } },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Ahmed", nom: "KAMMOUN", poste: "Auditeur Interne Groupe", email: "ahmed.kammoun@rose-blanche.com", empreinte: "97e4b794a413dfc12b6ce63a16c4a9b778f84eba1ab4de6752466ba465d540e6", t0: { score: 57, cult: 60, prat: 60, prom: 40, crit: 60, secu: 40, meti: 80 } },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Asma", nom: "EL MEKKI", poste: "Responsable Audit Interne site Sousse", email: "asma.elmekki@rose-blanche.com", empreinte: "669e0b761ec2654d3ee8150cf5d7a5cad3d8db6159c5990754860b7c62570087", t0: { score: 60, cult: 20, prat: 40, prom: 60, crit: 80, secu: 60, meti: 100 } },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Omar", nom: "GRATI", poste: "Responsable Audit Interne Site de Sfax", email: "grati.omar@rose-blanche.com", empreinte: "d53c47b4c723be8cfc453340fa5e1157675b999e653c73372f94c81f5aa3898f", t0: { score: 50, cult: 20, prat: 40, prom: 40, crit: 80, secu: 40, meti: 80 } },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Ahmed", nom: "DJEMAL", poste: "Assistant audit", email: "ahmed.jemal@rose-blanche.com", empreinte: "a39a4e15e2b665a232e81215dfb806c6445929a754f50287ac080d33893197df", t0: { score: 80, cult: 80, prat: 80, prom: 60, crit: 80, secu: 80, meti: 100 } },
+    { equipe: "Equipe Juridique", filiale: "MCSR", prenom: "Hatem", nom: "NATTAT", poste: "Directeur Juridique Groupe", email: "hatem.nattat@rose-blanche.com", empreinte: "808d16a544272f20bbe2752caae74e47e2a69ccab53618f99d1023a90bc75c41", t0: { score: 43, cult: 0, prat: 40, prom: 60, crit: 40, secu: 40, meti: 80 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Anis", nom: "BENSLIMENE", poste: "Responsable Juridique", email: "anis.benslimen@rose-blanche.com", empreinte: "6dac4fb0818b9b4feea6f84f1d4cf697d2723f113b7a7fba1a3bebc89821744b", t0: { score: 47, cult: 80, prat: 20, prom: 0, crit: 60, secu: 40, meti: 80 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Sami Zied", nom: "ERNEZ", poste: "Juriste", email: "samizied.ernaz@rose-blanche.com", empreinte: "82fd8f247a3b374b06336371c603378daadd72aa4b16562a96ff41fc113671b6", t0: { score: 60, cult: 40, prat: 80, prom: 40, crit: 60, secu: 80, meti: 60 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Mohamed Montassar", nom: "SKANDRANI", poste: "Responsable Juridique et Contentieux Site Tunis", email: "montassar.skandarani@rose-blanche.com", empreinte: "486418bbf1510e798c978ce53ca46ffebc67c286e76e566092c3d050243f96a2", t0: { score: 47, cult: 0, prat: 40, prom: 60, crit: 60, secu: 80, meti: 40 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Najah", nom: "JAMAA", poste: "Chef de Service Juridique Groupe", email: "najah.djemaa@rose-blanche.com", empreinte: "ee0d38c76f81c5469602083cfbda027e3aab210e3a00f23858caff55e32e5406", t0: { score: 47, cult: 40, prat: 20, prom: 60, crit: 60, secu: 40, meti: 60 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Raouf", nom: "AHMED", poste: "Responsable Juridique et Contentieux Groupe", email: "raouf.ahmed@rose-blanche.com", empreinte: "fca18412c066b496a034f9cb93864b3224586d748c1516af8320dbe982590983", t0: { score: 50, cult: 60, prat: 60, prom: 60, crit: 40, secu: 40, meti: 40 } },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Seif", nom: "DINARI", poste: "Juriste", email: "seif.dinari@rose-blanche.com", empreinte: "d488a26cb5db35ec02f8f33f23bc1bbbdf8b562fc15cbdd7a983a658cd149eae", t0: { score: 53, cult: 20, prat: 40, prom: 60, crit: 80, secu: 60, meti: 60 } },
+    { equipe: "Equipe Juridique", filiale: "STPA", prenom: "Lassaad", nom: "KAMMOUN", poste: "Directeur Département Juridique Sfax", email: "lassaad.kammoun@stpa.diari.tn", empreinte: "6ee4b1967213d53e167634e27f17bada80432976446b293d2ec56345a7b69ed0", t0: { score: 30, cult: 0, prat: 20, prom: 40, crit: 60, secu: 20, meti: 40 } },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Ahmed Mohamed", nom: "FERJANI", poste: "Responsable Risque Client Groupe", email: "ahmed.ferjani@warda.tn", empreinte: "e5f15a1c724afd2d163fd28f45f84d84980f77d9202da5d474551b09a5cc3291" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Marwa", nom: "KHEDER", poste: "Responsable Comptabilité et Finance Groupe", email: "marwa.khedher@rose-blanche.com", empreinte: "1ce8888c283896e5b1dce26864bfab90418005b65c453512bd4dc92b87799dfd", t0: { score: 53, cult: 20, prat: 60, prom: 60, crit: 40, secu: 60, meti: 80 } },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mouna", nom: "HELAOUI", poste: "Responsable Comptabilité et Finance Groupe", email: "mouna.helaoui@rose-blanche.com", empreinte: "554a1e41d2c5bc527dfad7ef595896aaffaca9bd2a16fc8a6d037f7f6b6543b9", t0: { score: 80, cult: 100, prat: 80, prom: 40, crit: 100, secu: 60, meti: 100 } },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mohamed", nom: "BEN AMMAR", poste: "Directeur Comptabilité et Finance Groupe", email: "m.benammar@warda.tn", empreinte: "84227e60ce5cc9fb9ee7190029b8bda8ac07b3154eac6949d01c5f15fb5d703b", t0: { score: 70, cult: 20, prat: 80, prom: 80, crit: 60, secu: 80, meti: 100 } },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Salem", nom: "BETTAIEB", poste: "Responsable Comptabilité et Finance Groupe", email: "s.bettaieb@warda.tn", empreinte: "105f52e5e9d161975d08572659d1f4c28de33c9e48739d0da137e595fd39508c", t0: { score: 50, cult: 40, prat: 40, prom: 40, crit: 40, secu: 60, meti: 80 } },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Wael", nom: "GHIDHAOUI", poste: "À préciser", email: "wael.ghidhaoui@rose-blanche.com", empreinte: "452109c0c46c5d0c0ca59aa2f31698e2b71e0c72fd26bf84c63b6e93c6ed5b24", t0: { score: 70, cult: 60, prat: 80, prom: 60, crit: 80, secu: 80, meti: 60 } },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Ahmed", nom: "GAAIED", poste: "Directeur Organisation et Gestion des Risques Groupe", email: "a.gaaied@warda.tn", empreinte: "5add22aa156194c1e2adda17bfd37b71a7be9183b5f3860ed2db2305a226ff72", t0: { score: 90, cult: 80, prat: 80, prom: 80, crit: 100, secu: 100, meti: 100 } },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Sami", nom: "BEJAOUI", poste: "Directeur Process et Contrôle Interne Groupe", email: "sami.bejaoui@rose-blanche.com", empreinte: "04ca5fcb4f3c78b98ac6a1c064ec2be62a3c5bbeec6fcba63630c296c6f837ca" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Rim", nom: "BEN ABDESSLEM", poste: "Chargée Administrative Groupe", email: "rim.benabdesslem@rose-blanche.com", empreinte: "bf37b7e97f37ac41a6f3bb2b804ff486e1ac886f70624076197322c887381c6b", t0: { score: 47, cult: 0, prat: 40, prom: 60, crit: 100, secu: 20, meti: 60 } },
+    { equipe: "Equipe Formation", filiale: "IXIA", prenom: "Fatma", nom: "MDIMAGH", poste: "Responsable Formation Groupe", email: "fatma.mdimagh@rose-blanche.com", empreinte: "906582f662fa4be1dc724108a1be1a4f023ac41e0332e0ba11ef74ee77ff2c58" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Hajer", nom: "ZAGA", poste: "Formatrice", email: "hajer.zaga@bassetti-group.com", empreinte: "e60935e9e1eaaeff99862967d771313841f9383fd4df7740aa65599835a2123e" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Stéphane", nom: "HURY", poste: "Formateur", email: "stephane.hury@bassetti.fr", empreinte: "300dfeddfb8b57a458b9eb4a675d7a6c680631c99355433861a2b2e37685b03f" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Nader", nom: "VAKIL", poste: "Suivi du parcours", email: "nader.vakil@bassetti-group.com", empreinte: "f7b886369757a8836e997047f018585409d7d0cf5d417265b7bda3d8b4fa7eec" }
+  ];
+
+  // Pas de question d’identité : tout vient de PARTICIPANTS. Les retours sur la journée
+  // sont demandés à la fin, sur l’écran de l’exercice.
+  const CHAMPS = [];
+
+  // Compétences évaluées (les mêmes qu’au T0, pour permettre la comparaison)
+  const COMPETENCES = [
+    { code: "cult", libelle: "Culture et compréhension de l’IA", module: "Revoir la Partie 1 : notions de base de l’IA" },
+    { code: "prat", libelle: "Pratique des outils au quotidien", module: "Revoir 1.4 Déploiements et 2.3 Caractéristiques d’un LLM" },
+    { code: "prom", libelle: "Ingénierie du prompt", module: "Revoir 2.4 Le prompting et refaire les exercices" },
+    { code: "crit", libelle: "Esprit critique et vérification", module: "Revoir 2.2 Se mettre à la place du LLM et 3.8 Risques" },
+    { code: "secu", libelle: "Sécurité et conformité", module: "Revoir 3.8 Risques et l’AI Act" },
+    { code: "meti", libelle: "Application au métier", module: "Revoir la Partie 3 : cas d’usage concrets" }
+  ];
+
+  // Paliers de niveau selon le score global (%)
+  const NIVEAUX = [
+    { min: 0, code: "N0", nom: "Découverte" },
+    { min: 26, code: "N1", nom: "Initié" },
+    { min: 46, code: "N2", nom: "Praticien" },
+    { min: 66, code: "N3", nom: "Autonome" },
+    { min: 86, code: "N4", nom: "Référent" }
+  ];
+
+  // Questions du Jour 1 (cours n°1). type : "unique" ou "multiple".
+  // bonnes : lettre(s) des bonnes réponses. notion : chapitre du cours à revoir en cas d’erreur.
+  // Les questions marquées « QCM du cours » reprennent les diapositives 74 à 77.
+  const QUESTIONS = [
+
+    /* ---------- Culture et compréhension de l’IA ---------- */
+    { id: "J01", competence: "cult", type: "unique", notion: "1.5.2 Machine learning", // QCM du cours, Q1
+      question: "Qu’est-ce que le Machine Learning ?",
+      options: ["Un type de solution logicielle pour enseigner l’IA aux étudiants",
+                "Un champ d’étude qui cherche à donner aux ordinateurs la capacité d’apprendre à partir de données",
+                "Un algorithme qui rend les ordinateurs intelligents grâce à des règles d’expert",
+                "La courbe d’apprentissage théorique d’un calculateur"],
+      bonnes: "B",
+      explication: "L’ordinateur apprend à partir de données au lieu de suivre des instructions programmées. Les règles d’expert, elles, relèvent de l’IA symbolique." },
+
+    { id: "J02", competence: "cult", type: "unique", notion: "1.5.4 IA générative", // QCM du cours, Q2
+      question: "À quoi sert l’IA générative ?",
+      options: ["À penser comme un humain",
+                "À générer des algorithmes",
+                "À créer de l’information nouvelle",
+                "À assister la production d’électricité"],
+      bonnes: "C",
+      explication: "L’IA discriminative distingue des données (« c’est un chat »). L’IA générative crée un contenu qui n’existait pas : texte, image, code, son." },
+
+    { id: "J03", competence: "cult", type: "unique", notion: "1.1.1 Historique", // QCM du cours, Q3
+      question: "En quelle année est apparu le premier chatbot ?",
+      options: ["1966", "1984", "2011", "2021"],
+      bonnes: "A",
+      explication: "ELIZA, en 1966. Le principe d’un échange en langage naturel est ancien ; ce qui a changé avec les LLM, c’est la qualité de la génération." },
+
+    { id: "J04", competence: "cult", type: "unique", notion: "1.1.5 Degrés d’évolution (ANI, AGI, ASI)", // QCM du cours, Q4
+      question: "Qu’est-ce qu’une AGI ?",
+      options: ["Artificial Geologic Intelligence",
+                "Artistic Generative Intelligence",
+                "Artificial General Intelligence",
+                "Artificial Global Inference"],
+      bonnes: "C",
+      explication: "Une IA capable d’apprendre n’importe quelle tâche intellectuelle comme un humain. Elle reste théorique : les outils actuels sont des IA « faibles » (ANI), performantes sur des tâches précises." },
+
+    { id: "J05", competence: "cult", type: "unique", notion: "1.5.3 Deep learning", // QCM du cours, Q6
+      question: "Qu’est-ce qu’un algorithme de Deep Learning ?",
+      options: ["Un modèle pour décrire les fonds marins",
+                "Un modèle qui simule l’apprentissage d’un humain",
+                "Un modèle qui décrit en profondeur une image",
+                "Un modèle basé sur de multiples couches de neurones"],
+      bonnes: "D",
+      explication: "C’est l’empilement des couches de neurones artificiels qui donne l’aspect « profond ». Chaque couche extrait des caractéristiques de plus en plus complexes." },
+
+    { id: "J06", competence: "cult", type: "unique", notion: "1.3.3 Labellisation", // QCM du cours, Q7
+      question: "Qu’est-ce que la labellisation de données ?",
+      options: ["Donner une valeur économique à une donnée",
+                "Attribuer un niveau de pertinence à une donnée",
+                "Donner un sens à une donnée brute",
+                "Traduire une donnée"],
+      bonnes: "C",
+      explication: "Pour apprendre en mode supervisé, le modèle a besoin d’exemples corrigés : on ajoute du sens aux données (« cette écriture est une anomalie »)." },
+
+    /* ---------- Pratique des outils au quotidien ---------- */
+    { id: "J07", competence: "prat", type: "unique", notion: "1.3.1 Typologie des données", // QCM du cours, Q5
+      question: "Qu’est-ce qu’une donnée structurée ?",
+      options: ["Une information sur la structure des bâtiments",
+                "Un fichier PDF",
+                "Un fichier Excel",
+                "Une vidéo prête à être diffusée"],
+      bonnes: "C",
+      explication: "Une donnée structurée tient dans un tableau (dates, montants, comptes). Un PDF, un courriel ou une vidéo sont des données non structurées." },
+
+    { id: "J08", competence: "prat", type: "unique", notion: "1.4.2 Intégration et API", // QCM du cours, Q8
+      question: "Qu’est-ce qu’une API ?",
+      options: ["Une interface qui permet d’utiliser une IA depuis un autre programme",
+                "Un serveur qui héberge une IA",
+                "Une IA qui surveille les utilisateurs",
+                "Une IA dédiée à la production industrielle"],
+      bonnes: "A",
+      explication: "L’API est le connecteur standard : elle permet à un logiciel de l’entreprise (ERP, outil de reporting) de faire appel à une IA sans passer par une fenêtre de discussion." },
+
+    { id: "J09", competence: "prat", type: "unique", notion: "1.4.1 Architectures (Cloud, On-Premise, Edge)",
+      question: "Votre direction veut faire analyser des contrats confidentiels sans qu’aucune donnée ne quitte l’entreprise. Quelle architecture répond à ce besoin ?",
+      options: ["Une installation sur site (On-Premise), sur les serveurs de l’entreprise",
+                "Un chatbot grand public gratuit",
+                "Une application installée sur le smartphone personnel de chaque juriste",
+                "Un service Cloud accessible par internet"],
+      bonnes: "A",
+      explication: "L’installation sur site donne le contrôle total des données. La contrepartie : un coût matériel (GPU) élevé, une maintenance complexe et des modèles souvent moins performants." },
+
+    { id: "J10", competence: "prat", type: "unique", notion: "2.1.3 Token",
+      question: "La longueur maximale d’une demande, celle de la réponse et le coût d’utilisation d’un LLM se mesurent en :",
+      options: ["Mots",
+                "Pages",
+                "Tokens",
+                "Caractères"],
+      bonnes: "C",
+      explication: "Le token est une fraction de mot. Un texte en français consomme environ 1,6 token par mot, un texte en arabe beaucoup plus : à volume égal, la limite est atteinte plus vite." },
+
+    { id: "J11", competence: "prat", type: "unique", notion: "2.3.3 Fenêtre de contexte",
+      question: "Vous voulez faire analyser en une seule fois un rapport de 300 pages. Quelle caractéristique du modèle est déterminante ?",
+      options: ["Sa date de sortie",
+                "La langue de son interface",
+                "Son nombre de paramètres",
+                "Sa fenêtre de contexte"],
+      bonnes: "D",
+      explication: "La fenêtre de contexte est la « mémoire de travail » du modèle. Si le document la dépasse, le modèle perd le fil : il faut un modèle à grande fenêtre ou un découpage du document." },
+
+    { id: "J12", competence: "prat", type: "unique", notion: "2.3.2 Nombre de paramètres",
+      question: "Par rapport à un modèle de 70 milliards de paramètres, un modèle de 8 milliards est en général :",
+      options: ["Plus performant, mais plus lent",
+                "Plus rapide et moins gourmand en ressources, mais moins performant",
+                "Strictement équivalent",
+                "Inutilisable en entreprise"],
+      bonnes: "B",
+      explication: "Un petit modèle peut tourner sur un PC, voire un téléphone. Un grand modèle stocke davantage de connaissances, mais exige des serveurs puissants." },
+
+    /* ---------- Ingénierie du prompt ---------- */
+    { id: "J13", competence: "prom", type: "unique", notion: "2.4.1 Assigner un rôle (persona)",
+      question: "Commencer une demande par « En tant qu’auditeur interne expérimenté… » sert à :",
+      options: ["Donner à l’IA un accès aux dossiers d’audit",
+                "Garantir l’exactitude de la réponse",
+                "Rester poli avec l’outil",
+                "Concentrer le modèle sur la partie de son apprentissage utile à la tâche"],
+      bonnes: "D",
+      explication: "Le rôle oriente le vocabulaire, le niveau d’exigence et les réflexes de la réponse. Il n’ouvre aucun accès et ne garantit rien : il améliore la pertinence." },
+
+    { id: "J14", competence: "prom", type: "multiple", notion: "2.4.1 Donner du contexte et des détails",
+      question: "Lesquels de ces ajouts donnent un contexte utile à une demande ? (plusieurs réponses)",
+      options: ["Le public visé : « pour le comité de direction »",
+                "Une contrainte : « en moins de 150 mots »",
+                "Le format attendu : « sous forme de tableau »",
+                "« Fais de ton mieux »",
+                "« Merci beaucoup »"],
+      bonnes: "A,B,C",
+      explication: "Public cible, contraintes et format retirent une part d’interprétation à l’outil. Les encouragements et les formules de politesse ne changent rien au résultat." },
+
+    { id: "J15", competence: "prom", type: "unique", notion: "2.4.1 Donner des exemples (few-shot)",
+      question: "Vous écrivez : « Exemple 1 : “Livraison en retard” → Négatif. Exemple 2 : “Produit conforme” → Positif. Avis à classer : … ». Cette technique s’appelle :",
+      options: ["Few-shot prompting",
+                "Fine-tuning",
+                "Embedding",
+                "Chain of thought"],
+      bonnes: "A",
+      explication: "Montrer un ou deux exemples du résultat attendu est souvent plus efficace que de le décrire. C’est le moyen le plus simple d’obtenir une sortie homogène." },
+
+    { id: "J16", competence: "prom", type: "unique", notion: "2.4.1 Décomposer (chain of thought)",
+      question: "Ajouter « Réfléchis étape par étape » à la fin d’une demande complexe :",
+      options: ["N’a d’effet qu’en anglais",
+                "Raccourcit la réponse",
+                "Oblige le modèle à décomposer son raisonnement avant de conclure, ce qui réduit les erreurs de logique",
+                "Déclenche une recherche sur internet"],
+      bonnes: "C",
+      explication: "Chaque étape devient visible et contrôlable. Vous repérez où le raisonnement dérape, au lieu de rejeter la réponse en bloc." },
+
+    { id: "J17", competence: "prom", type: "unique", notion: "2.4.1 Itérer et affiner",
+      question: "La première réponse ne vous convient pas tout à fait. Quelle est la démarche la plus efficace ?",
+      options: ["Ouvrir une nouvelle conversation et reposer exactement la même question",
+                "Préciser, dans la même conversation, ce qu’il faut modifier : « ajoute une section sur les coûts »",
+                "Abandonner : l’outil n’est pas adapté",
+                "Réécrire entièrement la réponse à la main"],
+      bonnes: "B",
+      explication: "L’IA est faite pour dialoguer. Elle garde le contexte de l’échange : une consigne de correction ciblée est plus rapide qu’un nouveau départ." },
+
+    /* ---------- Esprit critique et vérification ---------- */
+    { id: "J18", competence: "crit", type: "unique", notion: "2.1.6 Hallucination",
+      question: "L’assistant vous cite un arrêt de la Cour de cassation, avec date et numéro. Vous vérifiez : cet arrêt n’existe pas. Ce phénomène s’appelle :",
+      options: ["Une injection de prompt",
+                "Une dérive des données (data drift)",
+                "Un biais",
+                "Une hallucination"],
+      bonnes: "D",
+      explication: "L’hallucination est une réponse cohérente et d’apparence factuelle, mais inventée. Les références juridiques en sont la forme la plus coûteuse." },
+
+    { id: "J19", competence: "crit", type: "unique", notion: "3.8 Risques : hallucinations",
+      question: "Comment reconnaît-on une réponse fausse produite par une IA générative ?",
+      options: ["À son ton hésitant",
+                "À ses fautes d’orthographe",
+                "On ne la reconnaît pas au ton : elle est formulée avec la même assurance qu’une réponse juste",
+                "À sa longueur, plus courte que la normale"],
+      bonnes: "C",
+      explication: "Le modèle produit des réponses fondées sur des probabilités, pas sur des faits. Seule une vérification extérieure permet de trancher." },
+
+    { id: "J20", competence: "crit", type: "unique", notion: "2.2 Se mettre à la place du LLM (chambre chinoise)",
+      question: "Un LLM répond correctement que le client n’a pas mangé le hamburger brûlé. D’après l’exercice vu en cours, cela montre que :",
+      options: ["Il reproduit des enchaînements fréquents dans ses données, sans compréhension réelle de la situation",
+                "Il a été entraîné dans un restaurant",
+                "Il a consulté internet pour trouver la réponse",
+                "Le modèle comprend le monde comme un humain"],
+      bonnes: "A",
+      explication: "Comme l’étranger de la chambre chinoise, le modèle peut répondre juste sans comprendre. C’est pourquoi il n’a ni sens commun ni expertise métier." },
+
+    { id: "J21", competence: "crit", type: "unique", notion: "3.8 Risques : informations pas à jour",
+      question: "Vous interrogez un LLM sur une disposition fiscale entrée en vigueur le mois dernier. Quel est le risque principal ?",
+      options: ["Le modèle refuse de répondre",
+                "Le modèle a pu être entraîné sur des données antérieures et répondre à partir d’un texte dépassé",
+                "La réponse sera rédigée en anglais",
+                "Aucun : les LLM se mettent à jour en continu"],
+      bonnes: "B",
+      explication: "Un modèle ne connaît que ce qu’il a vu à l’entraînement. Sur un sujet récent, il faut lui fournir le texte officiel ou vérifier la source." },
+
+    { id: "J22", competence: "crit", type: "unique", notion: "2.4.3 Questionner un document",
+      question: "Dans la démonstration sur « L’Art de la guerre », poser la question avec le document joint plutôt que sans :",
+      options: ["Garantit une réponse sans aucune erreur",
+                "Rend seulement la réponse plus longue",
+                "Ne change rien au résultat",
+                "Ancre la réponse sur une source identifiable, que l’on peut vérifier"],
+      bonnes: "D",
+      explication: "Le document réduit fortement le risque d’invention et rend la réponse vérifiable. Il ne le supprime pas : le contrôle reste nécessaire." },
+
+    /* ---------- Sécurité et conformité ---------- */
+    { id: "J23", competence: "secu", type: "unique", notion: "3.8 Risques : confidentialité des données",
+      question: "Quand vous utilisez une IA en ligne grand public, que savez-vous de la destination des données que vous lui soumettez ?",
+      options: ["Elles sont couvertes par le secret professionnel",
+                "Elles sont effacées dès la réponse donnée",
+                "On ne sait pas où elles vont : il ne faut pas y mettre d’informations confidentielles",
+                "Elles restent sur votre poste de travail"],
+      bonnes: "C",
+      explication: "Sans cadre contractuel avec l’éditeur, vous perdez la maîtrise de ce que vous déposez. Le choix de l’outil précède toujours le choix de la méthode." },
+
+    { id: "J24", competence: "secu", type: "unique", notion: "1.4.3 Sécurité : injection de prompt",
+      question: "Glisser des instructions dans une demande ou dans un document pour faire dire n’importe quoi à une IA, c’est :",
+      options: ["Une injection de prompt",
+                "Du few-shot",
+                "De la labellisation",
+                "Du prompt engineering"],
+      bonnes: "A",
+      explication: "Un document reçu de l’extérieur peut contenir des instructions cachées. Tout assistant branché sur une messagerie ou des fichiers entrants doit donc être encadré." },
+
+    { id: "J25", competence: "secu", type: "multiple", notion: "AI Act : risque inacceptable",
+      question: "Selon l’AI Act européen, lesquels de ces usages sont interdits (risque inacceptable) ? (plusieurs réponses)",
+      options: ["La notation sociale des personnes (social scoring)",
+                "Une base de reconnaissance faciale constituée en moissonnant des images sur internet sans ciblage",
+                "Un chatbot de service client",
+                "Un filtre anti-spam"],
+      bonnes: "A,B",
+      explication: "Ces deux usages menacent les droits fondamentaux et sont interdits. Le chatbot relève du risque de transparence, le filtre anti-spam du risque minimal." },
+
+    { id: "J26", competence: "secu", type: "unique", notion: "AI Act : risque élevé",
+      question: "Un système d’IA qui sélectionne les candidats à une formation professionnelle relève, dans l’AI Act, du :",
+      options: ["Risque minimal, sans obligation particulière",
+                "Risque élevé : documentation, transparence, surveillance humaine et qualité des données exigées",
+                "Risque inacceptable : il est interdit",
+                "Hors du champ de l’AI Act"],
+      bonnes: "B",
+      explication: "L’éducation et la formation professionnelle figurent parmi les domaines à risque élevé : l’usage est permis, mais strictement encadré." },
+
+    { id: "J27", competence: "secu", type: "unique", notion: "AI Act : obligation de transparence",
+      question: "Votre entreprise met en ligne un chatbot pour répondre aux clients. Quelle obligation de l’AI Act s’applique ?",
+      options: ["Informer l’utilisateur qu’il échange avec une IA",
+                "Faire valider chaque réponse par un juriste avant envoi",
+                "Limiter son usage aux heures ouvrées",
+                "Aucune"],
+      bonnes: "A",
+      explication: "C’est le niveau « risque spécifique de transparence » : l’utilisateur doit savoir qu’il parle à une IA, et les contenus générés doivent être identifiés comme tels." },
+
+    /* ---------- Application au métier ---------- */
+    { id: "J28", competence: "meti", type: "unique", notion: "3.5 Finance : détection de la fraude",
+      question: "La direction financière veut repérer, parmi des milliers de paiements fournisseurs, ceux qui s’écartent des habitudes. De quoi s’agit-il ?",
+      options: ["De maintenance prédictive",
+                "D’IA générative chargée de rédiger les ordres de paiement",
+                "De détection d’anomalies par machine learning, sur des données structurées",
+                "D’un système de traduction instantanée"],
+      bonnes: "C",
+      explication: "Repérer des comportements atypiques dans des transactions est le cas d’usage « détection de la fraude ». Les paiements sont des données structurées : le terrain du machine learning." },
+
+    { id: "J29", competence: "meti", type: "unique", notion: "1.5 Grands types d’IA : systèmes experts",
+      question: "Vous devez qualifier des dossiers selon une grille de règles fixes, en justifiant chaque décision (si A et B, alors C). Quelle famille d’IA convient le mieux ?",
+      options: ["Le deep learning",
+                "L’IA générative",
+                "Aucune : ce besoin ne relève pas de l’IA",
+                "L’IA symbolique (système expert), transparente et explicable"],
+      bonnes: "D",
+      explication: "Le système expert applique des règles explicites et sait dire pourquoi il conclut. Un réseau de neurones ou un LLM ne fournit pas cette traçabilité." },
+
+    { id: "J30", competence: "meti", type: "unique", notion: "3.3 Productivité : gestion des courriels",
+      question: "Vous recevez plus de 50 courriels par jour. Quel usage de l’IA correspond aux pratiques présentées en cours ?",
+      options: ["Laisser l’IA répondre et envoyer seule",
+                "Trier, résumer les longs fils et préparer des brouillons de réponses que vous relisez avant envoi",
+                "Supprimer automatiquement les courriels jugés inutiles",
+                "Transférer tous les courriels à un collègue"],
+      bonnes: "B",
+      explication: "Tri, résumé et brouillon font gagner l’essentiel du temps. L’envoi reste une décision humaine, parce qu’il engage l’entreprise." },
+
+    { id: "J31", competence: "meti", type: "unique", notion: "3.7 Forces et faiblesses",
+      question: "Pour un auditeur ou un contrôleur de gestion, quelle force de l’IA est la plus directement exploitable ?",
+      options: ["Sa connaissance du contexte de votre entreprise",
+                "Son expertise métier",
+                "Son sens commun",
+                "Sa capacité à traiter de gros volumes de données et à y reconnaître des formes"],
+      bonnes: "D",
+      explication: "Volume et reconnaissance de formes sont ses vraies forces. Le sens commun, le contexte de l’entreprise et l’expertise métier figurent au contraire parmi ses faiblesses." },
+
+    { id: "J32", competence: "meti", type: "unique", notion: "3.1 Usages transverses",
+      question: "Selon le cours, l’IA apporte une réponse à trois grands types de problèmes. Lesquels ?",
+      options: ["Automatisation, efficacité, complexité",
+                "Recrutement, paie, formation",
+                "Vitesse, coût, design",
+                "Sécurité, juridique, éthique"],
+      bonnes: "A",
+      explication: "Automatiser les tâches répétitives, gagner en efficacité, traiter des problèmes trop complexes ou trop volumineux pour être traités à la main." }
+  ];
+
+  // Exercice de rédaction (hors score global) : grille d’auto-évaluation tirée de la diapositive 2.4.1
+  const CRITERES = [
+    { t: "Rôle", d: "J’ai précisé le rôle ou la posture que l’assistant doit adopter." },
+    { t: "Tâche", d: "J’ai formulé une action précise, et non une intention vague." },
+    { t: "Contexte", d: "J’ai indiqué la source à utiliser et à qui le résultat est destiné." },
+    { t: "Contraintes et format", d: "J’ai posé des limites (longueur, périmètre) et décrit la forme attendue (tableau, colonnes, nombre de points)." },
+    { t: "Exemple ou étapes", d: "J’ai donné un exemple du résultat attendu, ou demandé de procéder étape par étape." },
+    { t: "Garde-fou", d: "J’ai prévu le cas où l’information manque, ou demandé d’indiquer les sources." }
+  ];
+
+  // Mise en situation selon l’équipe (le mot-clé est cherché dans le nom de l’équipe)
+  const EXERCICES = [
+    { equipe: "juridique",
+      brief: "Votre directeur juridique vous demande la liste des obligations à la charge de votre société dans un contrat fournisseur de 25 pages, avec leurs échéances, pour la réunion de jeudi.",
+      modele: "Tu es juriste d’entreprise dans un groupe agroalimentaire. À partir du contrat fournisseur joint, relève toutes les obligations à la charge de notre société. Présente-les dans un tableau : obligation, article, échéance, risque en cas de manquement (faible, moyen, élevé). Procède article par article. Si une échéance n’est pas précisée, écris « non précisée ». N’utilise aucune information extérieure au contrat. Le tableau est destiné au directeur juridique : pas de commentaire général." },
+    { equipe: "audit",
+      brief: "Vous préparez une mission d’audit du processus achats. Vous voulez obtenir une première proposition de programme de travail (tests à réaliser), à soumettre à votre responsable.",
+      modele: "Tu es auditeur interne senior. À partir de la procédure achats jointe, propose un programme de travail pour une mission d’audit du processus achats. Pour chaque test : risque couvert, objectif, procédure de test, données nécessaires, taille d’échantillon indicative. Présente le tout dans un tableau, en procédant étape par étape, de la demande d’achat au paiement. Exemple de ligne : « Paiement sans bon de commande → vérifier sur 25 paiements la présence d’un bon de commande approuvé ». Si la procédure ne précise pas un contrôle, signale-le comme « contrôle non documenté » au lieu de l’inventer." },
+    { equipe: "finance",
+      brief: "Vous devez rédiger, pour la direction générale, le commentaire de l’écart entre budget et réalisé sur la marge du trimestre, à partir de votre tableau de reporting.",
+      modele: "Tu es contrôleur de gestion. À partir du tableau joint (budget et réalisé du trimestre), rédige le commentaire de l’écart de marge destiné à la direction générale. Décompose l’écart en effet volume, effet prix, effet coût matière et effet structure, en procédant étape par étape. Ne commente que les écarts supérieurs à 5 % ou à 50 000 DT. Format : un tableau des effets, puis cinq lignes de commentaire au maximum. Utilise uniquement les chiffres du tableau ; si une donnée manque, écris « donnée manquante » sans l’estimer." },
+    { equipe: "organisation",
+      brief: "Suite à une réorganisation, vous devez mettre à jour la description d’une procédure interne et obtenir une version claire, prête à diffuser aux équipes concernées.",
+      modele: "Tu es chargé d’organisation dans un groupe industriel. À partir de la procédure jointe et de la note de réorganisation jointe, rédige la nouvelle version de la procédure. Format : objet, périmètre, rôles et responsabilités (tableau), étapes numérotées, contrôles. Phrases courtes, destinées à des opérationnels. Procède étape par étape et signale chaque changement par rapport à l’ancienne version. Si un rôle n’est pas attribué dans la note, écris « à confirmer » au lieu de le deviner." },
+    { equipe: "",
+      brief: "Vous devez préparer, pour le comité de direction de la semaine prochaine, une note d’une page à partir du rapport annuel du Groupe (environ 60 pages).",
+      modele: "Tu es analyste au sein d’un groupe agroalimentaire. À partir du rapport annuel joint, rédige une note d’une page destinée au comité de direction. Structure : trois faits marquants de l’exercice, deux points de vigilance, une question à trancher. Pour chaque élément, indique la page du rapport d’où il provient. N’utilise aucune information extérieure au document ; si un chiffre est absent, écris « non communiqué ». Ton factuel, phrases courtes." }
+  ];
+
+  /* =====================================================================
+     2. FONCTIONNEMENT – rien à modifier en dessous
+     ===================================================================== */
+
+  const LETTRES = "ABCDEF";
+  const app = document.getElementById("app");
+  const introEl = document.getElementById("intro");
+  let formulaire = null;
+  let utilisateur = null;
+  const CLE_SESSION = "j1.session";
+  const cleIdentite = id => "j1.identite." + id;
+  const cleReprise = id => "j1.reprise." + id;
+  let exo = {};
+  let chronoTimer = null;
+  let identite = {};
+  let ordre = [];
+  let reponses = {};
+  let idx = 0;
+  let debut = 0;
+  let enCours = false;
+  let envoiEnCours = false;
+
+  // Identité envoyée au Google Form, tirée de la liste des participants
+  const CHAMPS_IDENTITE = ["nom", "prenom", "email", "direction", "poste"];
+  // Every keyword the Jour 1 Google Form must contain
+  const CHAMPS_RESULTATS = ["identifiant", "score", "niveau", "cult", "prat", "prom", "crit", "secu", "meti", "t0_score", "progression",
+    "competences", "progres", "a_consolider", "notions_a_revoir", "prompt_texte", "prompt_auto", "retenu", "flou", "detail", "duree"];
+  function participant(email) {
+    const m = String(email || "").trim().toLowerCase();
+    return PARTICIPANTS.find(p => p.email.toLowerCase() === m) || null;
+  }
+  function nomComplet(p) { return p.prenom + " " + p.nom; }
+  function identiteDe(p) {
+    const avecFiliale = formulaire && formulaire.map[normaliser("filiale")];
+    const v = {
+      nom: p.nom, prenom: p.prenom, email: p.email.toLowerCase(), poste: p.poste,
+      direction: avecFiliale ? p.equipe : p.equipe + " (" + p.filiale + ")"
+    };
+    if (avecFiliale) v.filiale = p.filiale;
+    return v;
+  }
+  // Identity built from the editable profile lists (equipe, filiale, nom_prenom, poste, email)
+  function identiteDepuisProfil(v) {
+    const avecFiliale = formulaire && formulaire.map[normaliser("filiale")];
+    const pers = PARTICIPANTS.find(p => nomComplet(p) === v.nom_prenom);
+    const morceaux = String(v.nom_prenom || "").trim().split(/\s+/);
+    const r = {
+      prenom: pers ? pers.prenom : morceaux[0] || "",
+      nom: pers ? pers.nom : morceaux.slice(1).join(" "),
+      email: String(v.email || "").toLowerCase(), poste: v.poste,
+      direction: avecFiliale ? v.equipe : v.equipe + " (" + v.filiale + ")",
+      profil: v
+    };
+    if (avecFiliale) r.filiale = v.filiale;
+    return r;
+  }
+
+  function el(tag, cls, txt) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt != null) n.textContent = txt;
+    return n;
+  }
+  function vider() {
+    if (chronoTimer) { clearInterval(chronoTimer); chronoTimer = null; }
+    app.innerHTML = "";
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Reprise d'un test interrompu ---------- */
+  function sauvegarderProgression() {
+    if (!utilisateur || !enCours) return;
+    try {
+      localStorage.setItem(cleReprise(utilisateur), JSON.stringify({
+        v: 1, ordre: ordre.map(q => q.id), reponses: reponses, idx: idx, debut: debut, exo: exo, quand: Date.now()
+      }));
+    } catch (e) { /* stockage indisponible */ }
+  }
+  function effacerProgression() {
+    try { localStorage.removeItem(cleReprise(utilisateur)); } catch (e) { /* stockage indisponible */ }
+  }
+  function lireProgression() {
+    try {
+      const d = JSON.parse(localStorage.getItem(cleReprise(utilisateur)) || "null");
+      if (!d || d.v !== 1 || !Array.isArray(d.ordre) || !d.ordre.length) return null;
+      if (Date.now() - (d.quand || 0) > 7 * 24 * 3600 * 1000) return null;
+      if (!d.ordre.every(id => QUESTIONS.some(q => q.id === id))) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function construire(ids) {
+    return ids.map(id => {
+      const q = QUESTIONS.find(x => x.id === id);
+      return {
+        id: q.id,
+        type: q.type === "multiple" ? "multiple" : "unique",
+        question: q.question,
+        options: q.options.slice(0, LETTRES.length).map((t, i) => ({ lettre: LETTRES[i], texte: t }))
+      };
+    });
+  }
+  function reprendre(d) {
+    ordre = construire(d.ordre);
+    reponses = (d.reponses && typeof d.reponses === "object") ? d.reponses : {};
+    idx = Math.min(Math.max(0, d.idx | 0), ordre.length);
+    debut = d.debut || Date.now();
+    exo = (d.exo && typeof d.exo === "object") ? d.exo : {};
+    enCours = true;
+    if (idx === ordre.length) ecranExercice(); else ecranQuestion();
+  }
+  function normaliser(s) {
+    return String(s == null ? "" : s).trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+  function melanger(a) {
+    a = a.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function afficherIntro(visible) { introEl.hidden = !(visible && CONFIG.intro); }
+
+  function message(titre, texte) {
+    vider();
+    const p = el("div", "panel");
+    p.appendChild(el("h2", null, titre));
+    if (texte) p.appendChild(el("p", "muted", texte));
+    app.appendChild(p);
+  }
+
+  /** Transforme le lien prérempli en adresse d’envoi + correspondance mot-clé -> entry.XXX */
+  function lireFormulaire(lien) {
+    try {
+      const u = new URL(lien);
+      if (u.hostname !== "docs.google.com" || !/\/viewform$/.test(u.pathname)) return null;
+      const map = {};
+      u.searchParams.forEach((v, k) => { if (/^entry\.\d+$/.test(k)) map[normaliser(v)] = k; });
+      if (!Object.keys(map).length) return null;
+      return { action: u.origin + u.pathname.replace(/\/viewform$/, "/formResponse"), map: map };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* ---------- Démarrage ---------- */
+  function initialiser() {
+    document.title = CONFIG.titre;
+    document.getElementById("titre").textContent = CONFIG.titre;
+    introEl.textContent = CONFIG.intro;
+    formulaire = lireFormulaire(CONFIG.lienPrerempli);
+    if (!formulaire) {
+      message("Configuration incomplète", "Collez le lien prérempli du Google Form « Évaluation Jour 1 » dans CONFIG.lienPrerempli, en haut du script de index.html.");
+      return;
+    }
+    const absents = CHAMPS_IDENTITE.concat(CHAMPS_RESULTATS, CHAMPS.map(c => c.id)).filter(id => !formulaire.map[normaliser(id)]);
+    if (absents.length) {
+      message("Configuration incomplète",
+        "Ces informations n’ont pas de question correspondante dans le Google Form : " + absents.join(", ") +
+        ". Ajoutez une question par information dans le formulaire, régénérez le lien prérempli en y saisissant exactement ces mots-clés comme valeurs, puis recollez-le dans CONFIG.lienPrerempli. Sans cela, les réponses ne seraient pas enregistrées.");
+      return;
+    }
+    if (!PARTICIPANTS.length || !/^[a-f0-9]{64}$/.test(String(COMPTE_COMMUN.empreinte))) {
+      message("Configuration incomplète", "Renseignez PARTICIPANTS et l’empreinte de COMPTE_COMMUN (produite par generateur_empreintes.html).");
+      return;
+    }
+    document.getElementById("deconnexion").addEventListener("click", deconnecter);
+    let enregistre = null;
+    try { enregistre = sessionStorage.getItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
+    if (enregistre && participant(enregistre)) {
+      ouvrirSession(enregistre);
+    } else {
+      ecranConnexion();
+    }
+  }
+
+  /* ---------- Connexion ---------- */
+  function empreinte(identifiant, motDePasse) {
+    const octets = new TextEncoder().encode("t0|" + identifiant + "|" + motDePasse);
+    return crypto.subtle.digest("SHA-256", octets).then(h =>
+      Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join(""));
+  }
+
+  function ecranConnexion() {
+    vider();
+    afficherIntro(true);
+    afficherSession();
+    const form = el("form", "panel");
+    form.noValidate = true;
+    form.appendChild(el("h2", null, "Connexion"));
+
+    // Adresse e-mail : menu déroulant, groupé par équipe
+    const fId = el("div", "field");
+    const lbId = el("label", "lbl", "Adresse e-mail");
+    lbId.htmlFor = "login_id";
+    fId.appendChild(lbId);
+    fId.appendChild(el("p", "help", "Choisissez votre adresse dans la liste."));
+    const sel = el("select");
+    sel.id = "login_id";
+    const vide = el("option", null, "Choisir…");
+    vide.value = "";
+    sel.appendChild(vide);
+    const equipes = [];
+    PARTICIPANTS.forEach(p => { if (!equipes.includes(p.equipe)) equipes.push(p.equipe); });
+    equipes.forEach(eq => {
+      const g = el("optgroup");
+      g.label = eq;
+      PARTICIPANTS.filter(p => p.equipe === eq).forEach(p => {
+        const op = el("option", null, p.email.toLowerCase());
+        op.value = p.email.toLowerCase();
+        g.appendChild(op);
+      });
+      sel.appendChild(g);
+    });
+    fId.appendChild(sel);
+    form.appendChild(fId);
+
+    const fMdp = el("div", "field");
+    const lbMdp = el("label", "lbl", "Mot de passe");
+    lbMdp.htmlFor = "login_mdp";
+    const mdpInput = el("input");
+    mdpInput.type = "password";
+    mdpInput.id = "login_mdp";
+    mdpInput.autocomplete = "current-password";
+    fMdp.appendChild(lbMdp);
+    fMdp.appendChild(mdpInput);
+    form.appendChild(fMdp);
+    const err = el("p", "err-msg");
+    err.hidden = true;
+    err.setAttribute("role", "alert");
+    form.appendChild(err);
+
+    const a = el("div", "actions end");
+    const b = el("button", "btn", "Se connecter");
+    b.type = "submit";
+    a.appendChild(b);
+    form.appendChild(a);
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const id = form.querySelector("#login_id").value.trim().toLowerCase();
+      const mdp = form.querySelector("#login_mdp").value;
+      if (!id || !mdp) {
+        err.textContent = "Choisissez votre adresse e-mail et saisissez le mot de passe.";
+        err.hidden = false;
+        return;
+      }
+      b.disabled = true;
+      const p = participant(id);
+      const perso = p && /^[a-f0-9]{64}$/.test(String(p.empreinte || ""));
+      // Personal hash uses "prenom nom" in lowercase as identifier; the shared password stays accepted as a fallback
+      Promise.all([
+        perso ? empreinte(nomComplet(p).toLowerCase(), mdp) : Promise.resolve(""),
+        COMPTE_COMMUN.accepte ? empreinte(COMPTE_COMMUN.identifiant, mdp) : Promise.resolve("")
+      ]).then(([hPerso, hCommun]) => {
+        const valide = (perso && hPerso === p.empreinte) || (COMPTE_COMMUN.accepte && hCommun === COMPTE_COMMUN.empreinte);
+        if (!p || !valide) {
+          b.disabled = false;
+          err.textContent = "Mot de passe incorrect.";
+          err.hidden = false;
+          form.querySelector("#login_mdp").value = "";
+          form.querySelector("#login_mdp").focus();
+          return;
+        }
+        try { sessionStorage.setItem(CLE_SESSION, id); } catch (e2) { /* stockage indisponible */ }
+        ouvrirSession(id);
+      }).catch(() => {
+        b.disabled = false;
+        err.textContent = "La connexion n’a pas pu être vérifiée. Ouvrez le test depuis son lien https, puis réessayez.";
+        err.hidden = false;
+      });
+    });
+    app.appendChild(form);
+    form.querySelector("#login_id").focus();
+  }
+
+  function afficherSession() {
+    const bar = document.getElementById("session");
+    bar.hidden = !utilisateur;
+    const p = participant(utilisateur);
+    document.getElementById("session-nom").textContent = utilisateur ? "Connecté en tant que " + (p ? nomComplet(p) : utilisateur) : "";
+  }
+
+  function deconnecter() {
+    if (enCours && !window.confirm("Votre évaluation en cours sera mise en pause. Vous pourrez le reprendre à la prochaine connexion, sur ce même navigateur. Continuer ?")) return;
+    if (enCours) sauvegarderProgression();
+    try { sessionStorage.removeItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
+    utilisateur = null;
+    identite = {};
+    reponses = {};
+    enCours = false;
+    ecranConnexion();
+  }
+
+  function ouvrirSession(id) {
+    utilisateur = id;
+    identite = {};
+    try {
+      const sauve = JSON.parse(localStorage.getItem(cleIdentite(id)) || "null");
+      if (sauve && typeof sauve === "object") identite = sauve;
+    } catch (e) { /* stockage indisponible */ }
+    const p = participant(id);
+    // Values the candidate already edited take priority over the participant list
+    if (p) identite = Object.assign(identiteDe(p), identite);
+    afficherSession();
+    const d = lireProgression();
+    if (d) { ecranReprise(d); return; }
+    ecranIdentite();
+  }
+
+  /* ---------- Écran de reprise ---------- */
+  function ecranReprise(d) {
+    vider();
+    afficherIntro(false);
+    const p = el("div", "panel");
+    p.appendChild(el("h2", null, "Vous avez une évaluation en cours"));
+    const n = QUESTIONS.length;
+    const fait = Object.keys(d.reponses || {}).length;
+    const box = el("div", "resume");
+    box.appendChild(el("p", null,
+      ((d.idx | 0) >= n ? "Votre évaluation s’est interrompue à l’exercice de rédaction (" :
+      "Votre évaluation s’est interrompue à la question " + Math.min((d.idx | 0) + 1, n) + " sur " + n + " (") + "" + fait + " réponse" + (fait > 1 ? "s" : "") + " enregistrée" + (fait > 1 ? "s" : "") + ")."));
+    const a = el("div", "actions");
+    const bRe = el("button", "btn", "Reprendre où je me suis arrêté");
+    bRe.type = "button";
+    bRe.addEventListener("click", () => reprendre(d));
+    const bNew = el("button", "btn ghost", "Recommencer depuis le début");
+    bNew.type = "button";
+    bNew.addEventListener("click", () => {
+      if (!window.confirm("Vos réponses enregistrées seront effacées. Continuer ?")) return;
+      effacerProgression();
+      ecranIdentite();
+    });
+    a.appendChild(bRe);
+    a.appendChild(bNew);
+    box.appendChild(a);
+    p.appendChild(box);
+    app.appendChild(p);
+  }
+
+  /* ---------- Écran 1 : informations du candidat ---------- */
+  function ecranIdentite() {
+    vider();
+    afficherIntro(true);
+    const form = el("form", "panel");
+    form.noValidate = true;
+    form.appendChild(el("h2", null, "Vos informations"));
+
+    const moi = participant(utilisateur);
+    if (moi) {
+      form.appendChild(el("p", "help", "Ces informations viennent de la liste des participants. Vérifiez-les et modifiez-les si besoin."));
+      const profil = identite.profil || {};
+      [
+        { id: "equipe", libelle: "Équipe", val: p => p.equipe },
+        { id: "filiale", libelle: "Filiale", val: p => p.filiale },
+        { id: "nom_prenom", libelle: "Nom et prénom", val: p => nomComplet(p) },
+        { id: "poste", libelle: "Poste", val: p => p.poste },
+        { id: "email", libelle: "Adresse e-mail", val: p => p.email.toLowerCase() }
+      ].forEach(c => {
+        const f = el("div", "field");
+        const lb = el("label", "lbl", c.libelle);
+        lb.htmlFor = "profil_" + c.id;
+        f.appendChild(lb);
+        const s = el("select");
+        s.id = "profil_" + c.id;
+        s.name = c.id;
+        s.dataset.profil = c.id;
+        const vals = [];
+        PARTICIPANTS.forEach(p => { const v = c.val(p); if (!vals.includes(v)) vals.push(v); });
+        vals.forEach(v => { const op = el("option", null, v); op.value = v; s.appendChild(op); });
+        s.value = vals.includes(profil[c.id]) ? profil[c.id] : c.val(moi);
+        f.appendChild(s);
+        form.appendChild(f);
+      });
+      const pasMoi = el("p", "help");
+      pasMoi.appendChild(document.createTextNode("Ce n’est pas vous ? "));
+      const lien = el("button", "linkbtn", "Se déconnecter");
+      lien.type = "button";
+      lien.addEventListener("click", deconnecter);
+      pasMoi.appendChild(lien);
+      form.appendChild(pasMoi);
+      if (CHAMPS.length) form.appendChild(el("h3", null, "Quelques questions"));
+    }
+
+    CHAMPS.forEach(c => {
+      const f = el("div", "field");
+      f.dataset.id = c.id;
+      const id = "champ_" + c.id;
+      const lb = el("label", "lbl", c.libelle);
+      lb.htmlFor = id;
+      if (c.obligatoire) {
+        const s = el("span", "req", " *");
+        s.setAttribute("aria-hidden", "true");
+        lb.appendChild(s);
+      }
+      f.appendChild(lb);
+      if (c.aide) f.appendChild(el("p", "help", c.aide));
+
+      let input;
+      if (c.type === "liste") {
+        input = el("select");
+        const vide = el("option", null, "Choisir…");
+        vide.value = "";
+        input.appendChild(vide);
+        (c.options || []).forEach(o => { const op = el("option", null, o); op.value = o; input.appendChild(op); });
+      } else if (c.type === "texte_long") {
+        input = el("textarea");
+      } else {
+        input = el("input");
+        input.type = c.type === "email" ? "email" : c.type === "nombre" ? "number" : "text";
+        if (c.type === "email") input.autocomplete = "email";
+      }
+      input.id = id;
+      input.name = c.id;
+      if (c.obligatoire) input.setAttribute("aria-required", "true");
+      input.value = identite[c.id] || "";
+      f.appendChild(input);
+      form.appendChild(f);
+    });
+
+    const a = el("div", "actions end");
+    const b = el("button", "btn", "Commencer l’évaluation");
+    b.type = "submit";
+    a.appendChild(b);
+    form.appendChild(a);
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      if (validerIdentite(form)) demarrer();
+    });
+    app.appendChild(form);
+  }
+
+  function validerIdentite(form) {
+    let premier = null;
+    const valeurs = {};
+    CHAMPS.forEach(c => {
+      const f = form.querySelector('.field[data-id="' + c.id + '"]');
+      const input = f.querySelector("input,select,textarea");
+      const ancien = f.querySelector(".err-msg");
+      if (ancien) ancien.remove();
+      f.classList.remove("invalid");
+      input.removeAttribute("aria-invalid");
+
+      const v = input.value.trim().slice(0, 500);
+      let erreur = "";
+      if (c.obligatoire && !v) erreur = "Ce champ est obligatoire.";
+      else if (c.type === "email" && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) erreur = "Saisissez une adresse mail valide, par exemple prenom.nom@entreprise.com.";
+      if (erreur) {
+        f.classList.add("invalid");
+        input.setAttribute("aria-invalid", "true");
+        const m = el("p", "err-msg", erreur);
+        m.id = input.id + "_err";
+        input.setAttribute("aria-describedby", m.id);
+        f.appendChild(m);
+        if (!premier) premier = input;
+      }
+      valeurs[c.id] = c.type === "email" ? v.toLowerCase() : v;
+    });
+    if (premier) { premier.focus(); return false; }
+    const moi = participant(utilisateur);
+    const selects = form.querySelectorAll("select[data-profil]");
+    let ident = moi ? identiteDe(moi) : {};
+    if (moi && selects.length) {
+      const profil = {};
+      selects.forEach(s => { profil[s.dataset.profil] = s.value; });
+      ident = identiteDepuisProfil(profil);
+    }
+    identite = Object.assign(valeurs, ident);
+    try { localStorage.setItem(cleIdentite(utilisateur), JSON.stringify(valeurs)); } catch (e) { /* stockage indisponible */ }
+    return true;
+  }
+
+  function demarrer() {
+    const base = QUESTIONS.map(q => ({
+      id: q.id,
+      type: q.type === "multiple" ? "multiple" : "unique",
+      question: q.question,
+      options: q.options.slice(0, LETTRES.length).map((t, i) => ({ lettre: LETTRES[i], texte: t }))
+    }));
+    ordre = (CONFIG.melangerQuestions ? melanger(base) : base).map(q => {
+      if (CONFIG.melangerOptions) q.options = melanger(q.options);
+      return q;
+    });
+    reponses = {};
+    exo = {};
+    idx = 0;
+    debut = Date.now();
+    enCours = true;
+    effacerProgression();
+    sauvegarderProgression();
+    ecranQuestion();
+  }
+
+  /* ---------- Écran 2 : les questions ---------- */
+  function ecranQuestion() {
+    vider();
+    afficherIntro(false);
+    const q = ordre[idx];
+    const n = ordre.length;
+    const p = el("div", "panel");
+
+    const pr = el("div", "progress");
+    const cnt = el("div", "count");
+    cnt.appendChild(el("span", null, "Question " + (idx + 1) + " sur " + n));
+    const chrono = el("span", "chrono", "");
+    cnt.appendChild(chrono);
+    pr.appendChild(cnt);
+    function majChrono() {
+      const s = Math.max(0, Math.floor((Date.now() - debut) / 1000));
+      chrono.textContent = Math.floor(s / 60) + " min " + String(s % 60).padStart(2, "0") + " s";
+    }
+    majChrono();
+    chronoTimer = setInterval(majChrono, 1000);
+    const bar = el("div", "bar");
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.setAttribute("aria-valuemax", String(n));
+    bar.setAttribute("aria-valuenow", String(idx + 1));
+    const fill = el("i");
+    fill.style.width = (idx / n * 100) + "%";
+    bar.appendChild(fill);
+    pr.appendChild(bar);
+    p.appendChild(pr);
+
+    const fs = el("fieldset");
+    fs.appendChild(el("legend", null, q.question));
+    if (q.type === "multiple") fs.appendChild(el("p", "multi", "Plusieurs réponses possibles."));
+    const opts = el("div", "opts");
+    const type = q.type === "multiple" ? "checkbox" : "radio";
+    const liste = q.options.map(o => ({ valeur: o.lettre, texte: o.texte, idk: false }));
+    if (CONFIG.jeNeSaisPas) liste.push({ valeur: "?", texte: "Je ne sais pas", idk: true });
+
+    const labels = [];
+    liste.forEach(o => {
+      const lb = el("label", "opt" + (o.idk ? " idk" : ""));
+      const inp = el("input");
+      inp.type = type;
+      inp.name = "q";
+      inp.value = o.valeur;
+      lb.appendChild(inp);
+      lb.appendChild(el("span", null, o.texte));
+      const touche = o.idk ? "0" : String(labels.length + 1);
+      const k = el("span", "key", touche);
+      k.setAttribute("aria-hidden", "true");
+      lb.appendChild(k);
+      opts.appendChild(lb);
+      labels.push({ lb, inp, touche });
+    });
+    fs.appendChild(opts);
+    p.appendChild(fs);
+
+    const a = el("div", "actions");
+    const prec = el("button", "btn ghost", "Précédent");
+    prec.type = "button";
+    prec.disabled = idx === 0;
+    prec.addEventListener("click", () => { idx--; ecranQuestion(); });
+    const dernier = idx === n - 1;
+    const suiv = el("button", "btn", dernier ? "Passer à l’exercice" : "Question suivante");
+    suiv.type = "button";
+    a.appendChild(prec);
+    a.appendChild(suiv);
+    p.appendChild(a);
+    const err = el("p", "send-err");
+    err.hidden = true;
+    p.appendChild(err);
+
+    function synchroniser() {
+      const sel = reponses[q.id] || [];
+      labels.forEach(({ lb, inp }) => {
+        inp.checked = sel.indexOf(inp.value) !== -1;
+        lb.classList.toggle("on", inp.checked);
+      });
+      suiv.disabled = sel.length === 0;
+    }
+    labels.forEach(({ inp }) => {
+      inp.addEventListener("change", () => {
+        let sel = reponses[q.id] || [];
+        if (type === "radio" || inp.value === "?") {
+          sel = inp.checked ? [inp.value] : [];
+        } else {
+          sel = sel.filter(v => v !== "?");
+          if (inp.checked) { if (sel.indexOf(inp.value) === -1) sel.push(inp.value); }
+          else sel = sel.filter(v => v !== inp.value);
+        }
+        reponses[q.id] = sel;
+        sauvegarderProgression();
+        synchroniser();
+      });
+    });
+    synchroniser();
+
+    suiv.addEventListener("click", () => {
+      if (!dernier) { idx++; sauvegarderProgression(); ecranQuestion(); return; }
+      ecranExercice();
+    });
+
+    p.appendChild(el("p", "hint",
+      "Raccourcis : touches " + (CONFIG.jeNeSaisPas ? "1 à " + (labels.length - 1) + " ou 0" : "1 à " + labels.length) +
+      " pour répondre, Entrée pour continuer, flèche gauche pour revenir."));
+
+    function clavier(e) {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" && t.type === "text" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if (e.key === "Enter") {
+        if (!suiv.disabled) { e.preventDefault(); suiv.click(); }
+        return;
+      }
+      if (e.key === "ArrowLeft" && !prec.disabled) { e.preventDefault(); prec.click(); return; }
+      const cible = labels.filter(l => l.touche === e.key)[0];
+      if (cible) {
+        e.preventDefault();
+        if (type === "radio") { cible.inp.checked = true; }
+        else { cible.inp.checked = !cible.inp.checked; }
+        cible.inp.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+    document.addEventListener("keydown", clavier);
+    const stop = new MutationObserver(() => {
+      if (!document.body.contains(p)) { document.removeEventListener("keydown", clavier); stop.disconnect(); }
+    });
+    stop.observe(app, { childList: true });
+
+    app.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = ((idx + 1) / n * 100) + "%"; }));
+  }
+
+  /* ---------- Correction ---------- */
+  function corriger() {
+    const parComp = {};
+    let obtenu = 0;
+    let total = 0;
+    const detail = [];
+    const correction = [];
+    const notions = [];
+
+    QUESTIONS.forEach(q => {
+      const options = q.options.slice(0, LETTRES.length);
+      const valides = options.map((t, i) => LETTRES[i]);
+      const texte = l => { const i = LETTRES.indexOf(l); return options[i] != null ? l + ". " + options[i] : l; };
+      let rep = (reponses[q.id] || []).slice();
+      const nsp = rep.indexOf("?") !== -1;
+      rep = rep.filter((x, i, arr) => valides.indexOf(x) !== -1 && arr.indexOf(x) === i).sort();
+      if (q.type !== "multiple") rep = rep.slice(0, 1);
+      const bonnes = String(q.bonnes || "").toUpperCase().split(/[^A-F]+/).filter(Boolean).sort();
+      const juste = rep.length > 0 && rep.length === bonnes.length && rep.every((x, k) => x === bonnes[k]);
+
+      const c = q.competence || "general";
+      if (!parComp[c]) parComp[c] = { obtenu: 0, total: 0 };
+      parComp[c].total += 1;
+      total += 1;
+      if (juste) { parComp[c].obtenu += 1; obtenu += 1; }
+      else if (q.notion && notions.indexOf(q.notion) === -1) notions.push(q.notion);
+
+      detail.push(q.id + " : " + (rep.length ? rep.join(",") : nsp ? "Je ne sais pas" : "Sans réponse") + (juste ? " ✓" : " ✗"));
+      correction.push({
+        question: q.question,
+        juste: juste,
+        votre: rep.length ? rep.map(texte) : [nsp ? "Je ne sais pas" : "Sans réponse"],
+        bonnes: bonnes.map(texte),
+        explication: q.explication || ""
+      });
+    });
+
+    const pct = (o, t) => t ? Math.round(100 * o / t) : 0;
+    const codes = COMPETENCES.map(c => c.code);
+    const ordreComp = codes.concat(Object.keys(parComp).filter(k => codes.indexOf(k) === -1));
+    const axes = ordreComp.filter(k => parComp[k]).map(k => {
+      const c = COMPETENCES.find(x => x.code === k) || { libelle: k, module: "" };
+      return { code: k, libelle: c.libelle, module: c.module, score: pct(parComp[k].obtenu, parComp[k].total) };
+    });
+    const score = pct(obtenu, total);
+    let niveau = NIVEAUX[0];
+    NIVEAUX.forEach(x => { if (score >= x.min) niveau = x; });
+
+    return {
+      score: score,
+      niveau: niveau,
+      axes: axes,
+      forces: axes.filter(a => a.score >= CONFIG.seuilFort).sort((a, b) => b.score - a.score),
+      faiblesses: axes.filter(a => a.score < CONFIG.seuilFaible).sort((a, b) => a.score - b.score),
+      detail: detail,
+      correction: correction,
+      notions: notions,
+      duree: Math.round((Date.now() - debut) / 6000) / 10
+    };
+  }
+
+  /* ---------- Écran 3 : exercice de rédaction et retours sur la journée ---------- */
+  function exercicePour(equipe) {
+    const e = String(equipe || "").toLowerCase();
+    return EXERCICES.find(x => x.equipe && e.indexOf(x.equipe) !== -1) || EXERCICES.find(x => !x.equipe);
+  }
+
+  function ecranExercice() {
+    vider();
+    afficherIntro(false);
+    idx = ordre.length;
+    sauvegarderProgression();
+    const moi = participant(utilisateur);
+    const ex = exercicePour(moi ? moi.equipe : "");
+    if (!exo.criteres || exo.criteres.length !== CRITERES.length) exo.criteres = CRITERES.map(() => false);
+
+    const p = el("div", "panel");
+    const pr = el("div", "progress");
+    const cnt = el("div", "count");
+    cnt.appendChild(el("span", null, "Exercice de rédaction"));
+    cnt.appendChild(el("span", "chrono", "Dernière étape"));
+    pr.appendChild(cnt);
+    const bar = el("div", "bar");
+    const fill = el("i");
+    fill.style.width = "100%";
+    bar.appendChild(fill);
+    pr.appendChild(bar);
+    p.appendChild(pr);
+
+    p.appendChild(el("h2", null, "Rédigez votre demande, telle que vous l’écririez réellement"));
+    p.appendChild(el("p", "brief", ex.brief));
+
+    const fTa = el("div", "field");
+    const lbTa = el("label", "lbl", "Votre demande à l’assistant");
+    lbTa.htmlFor = "exo_prompt";
+    fTa.appendChild(lbTa);
+    const ta = el("textarea");
+    ta.id = "exo_prompt";
+    ta.className = "prompt";
+    ta.value = exo.texte || "";
+    ta.placeholder = "Écrivez comme vous le feriez un jour ordinaire…";
+    fTa.appendChild(ta);
+    p.appendChild(fTa);
+
+    const zoneGrille = el("div");
+    p.appendChild(zoneGrille);
+
+    const zoneRetours = el("div");
+    p.appendChild(zoneRetours);
+
+    const a = el("div", "actions");
+    const prec = el("button", "btn ghost", "Revenir aux questions");
+    prec.type = "button";
+    prec.addEventListener("click", () => { exo.texte = ta.value; idx = ordre.length - 1; sauvegarderProgression(); ecranQuestion(); });
+    const suiv = el("button", "btn", "Comparer à la grille");
+    suiv.type = "button";
+    a.appendChild(prec);
+    a.appendChild(suiv);
+    p.appendChild(a);
+    const err = el("p", "send-err");
+    err.hidden = true;
+    err.setAttribute("role", "alert");
+    p.appendChild(err);
+
+    function majBouton() {
+      if (!exo.grille) suiv.disabled = ta.value.trim().length < 15;
+    }
+    ta.addEventListener("input", () => { exo.texte = ta.value; sauvegarderProgression(); majBouton(); });
+
+    function afficherGrilleEtRetours() {
+      ta.readOnly = true;
+      zoneGrille.innerHTML = "";
+      zoneGrille.appendChild(el("h3", null, "Votre demande contenait-elle ces six éléments ?"));
+      zoneGrille.appendChild(el("p", "help", "Relisez ce que vous avez écrit et cochez honnêtement. Cette auto-évaluation n’entre pas dans votre score."));
+      CRITERES.forEach((c, i) => {
+        const lab = el("label", "crit");
+        const cb = el("input");
+        cb.type = "checkbox";
+        cb.checked = !!exo.criteres[i];
+        cb.addEventListener("change", () => { exo.criteres[i] = cb.checked; sauvegarderProgression(); });
+        const t = el("div");
+        t.appendChild(el("b", null, c.t));
+        t.appendChild(el("span", null, c.d));
+        lab.appendChild(cb);
+        lab.appendChild(t);
+        zoneGrille.appendChild(lab);
+      });
+      const mm = el("div", "model");
+      mm.appendChild(el("h4", null, "Une demande qui coche les six critères"));
+      mm.appendChild(el("div", null, ex.modele));
+      zoneGrille.appendChild(mm);
+
+      zoneRetours.innerHTML = "";
+      zoneRetours.appendChild(el("h3", null, "Votre retour sur la journée"));
+      [
+        { id: "retenu", libelle: "Qu’allez-vous appliquer dès demain dans votre travail ?", obligatoire: true },
+        { id: "flou", libelle: "Quelle notion de la journée reste floue pour vous ?", obligatoire: false,
+          aide: "Elle sera reprise en ouverture du Jour 2." }
+      ].forEach(c => {
+        const f = el("div", "field");
+        const lb = el("label", "lbl", c.libelle);
+        lb.htmlFor = "retour_" + c.id;
+        if (c.obligatoire) { const s = el("span", "req", " *"); s.setAttribute("aria-hidden", "true"); lb.appendChild(s); }
+        f.appendChild(lb);
+        if (c.aide) f.appendChild(el("p", "help", c.aide));
+        const t = el("textarea");
+        t.id = "retour_" + c.id;
+        t.value = exo[c.id] || "";
+        if (c.obligatoire) t.setAttribute("aria-required", "true");
+        t.addEventListener("input", () => { exo[c.id] = t.value; sauvegarderProgression(); });
+        f.appendChild(t);
+        zoneRetours.appendChild(f);
+      });
+
+      suiv.textContent = "Envoyer mes réponses";
+      suiv.disabled = false;
+      prec.disabled = false;
+    }
+
+    suiv.addEventListener("click", () => {
+      if (!exo.grille) {
+        exo.texte = ta.value;
+        exo.grille = true;
+        sauvegarderProgression();
+        afficherGrilleEtRetours();
+        return;
+      }
+      const retenu = (exo.retenu || "").trim();
+      if (!retenu) {
+        err.textContent = "Indiquez ce que vous allez appliquer dès demain : c’est ce qui nous aide à adapter le Jour 2.";
+        err.hidden = false;
+        p.querySelector("#retour_retenu").focus();
+        return;
+      }
+      err.hidden = true;
+      envoyer(suiv, err);
+    });
+
+    if (exo.grille) afficherGrilleEtRetours(); else majBouton();
+    app.appendChild(p);
+    if (!exo.grille) ta.focus();
+  }
+
+  /* ---------- Comparaison avec le T0 ---------- */
+  function comparerT0(r) {
+    const moi = participant(utilisateur);
+    const t0 = moi && moi.t0 ? moi.t0 : null;
+    r.t0 = t0;
+    r.axes.forEach(a => { a.t0 = t0 && typeof t0[a.code] === "number" ? t0[a.code] : null; a.delta = a.t0 == null ? null : a.score - a.t0; });
+    r.deltaGlobal = t0 ? r.score - t0.score : null;
+    r.progres = r.axes.filter(a => a.delta != null && a.delta > 0).sort((a, b) => b.delta - a.delta);
+    r.aConsolider = r.axes.filter(a => a.score < CONFIG.seuilFaible || (a.delta != null && a.delta < 0))
+      .sort((a, b) => a.score - b.score);
+    r.exo = {
+      texte: (exo.texte || "").trim(),
+      score: (exo.criteres || []).filter(Boolean).length,
+      criteres: CRITERES.filter((c, i) => exo.criteres && exo.criteres[i]).map(c => c.t)
+    };
+    return r;
+  }
+  const signe = d => d == null ? "–" : d > 0 ? "+" + d : d < 0 ? "−" + Math.abs(d) : "=";
+
+  /* ---------- Envoi vers le Google Form ---------- */
+  function envoyer(btn, err) {
+    if (envoiEnCours) return;
+    envoiEnCours = true;
+    btn.disabled = true;
+    btn.textContent = "Envoi en cours…";
+    err.hidden = true;
+
+    const r = comparerT0(corriger());
+    const valeurs = Object.assign({}, identite, {
+      score: r.score,
+      niveau: r.niveau.code + " – " + r.niveau.nom,
+      t0_score: r.t0 ? r.t0.score : "pas de T0",
+      progression: r.deltaGlobal == null ? "pas de T0" : signe(r.deltaGlobal),
+      competences: r.axes.map(a => a.libelle + " : " + a.score + " %" + (a.t0 != null ? " (T0 " + a.t0 + " %, " + signe(a.delta) + ")" : "")).join(" | "),
+      progres: r.progres.map(a => a.libelle + " " + signe(a.delta)).join(", "),
+      a_consolider: r.aConsolider.map(a => a.libelle + " (" + a.score + " %)").join(", "),
+      notions_a_revoir: r.notions.join(" | "),
+      prompt_texte: r.exo.texte,
+      prompt_auto: r.exo.score + "/6" + (r.exo.criteres.length ? " (" + r.exo.criteres.join(", ") + ")" : ""),
+      retenu: (exo.retenu || "").trim().slice(0, 2000),
+      flou: (exo.flou || "").trim().slice(0, 2000),
+      detail: r.detail.join(" | "),
+      duree: r.duree
+    });
+    r.axes.forEach(a => { valeurs[a.code] = a.score; });
+    valeurs.identifiant = utilisateur;
+
+    const data = new URLSearchParams();
+    Object.keys(valeurs).forEach(k => {
+      const entry = formulaire.map[normaliser(k)];
+      if (entry) data.append(entry, String(valeurs[k]));
+    });
+
+    fetch(formulaire.action, { method: "POST", mode: "no-cors", body: data })
+      .then(() => {
+        envoiEnCours = false;
+        enCours = false;
+        effacerProgression();
+        ecranBilan(r);
+      })
+      .catch(() => {
+        envoiEnCours = false;
+        btn.disabled = false;
+        btn.textContent = "Envoyer mes réponses";
+        err.textContent = "L’envoi a échoué. Vos réponses sont conservées sur cette page : vérifiez votre connexion internet, puis cliquez de nouveau sur « Envoyer mes réponses ».";
+        err.hidden = false;
+      });
+  }
+
+  /* ---------- Écran 4 : le bilan (format KPI du kit de démonstration) ---------- */
+  function ecranBilan(r) {
+    vider();
+    afficherIntro(false);
+    const p = el("div", "panel bilan");
+    p.appendChild(el("h2", "b-title", "Bilan de fin de Jour 1" + (identite.prenom ? ", " + identite.prenom : "")));
+
+    const hi = r.progres[0];
+    const lo = r.axes.slice().sort((a, b) => a.score - b.score)[0];
+    let lede = "";
+    if (hi) lede = "Votre plus forte montée en compétence depuis le test de positionnement porte sur « " + hi.libelle + " » (" + signe(hi.delta) + " points).";
+    else if (r.t0) lede = "Aucun axe n’est en hausse par rapport au test de positionnement : le Jour 2 sera l’occasion de consolider.";
+    else lede = "Pas de test de positionnement enregistré à votre nom : ce bilan sert de point de départ.";
+    if (lo && lo.score < CONFIG.seuilFort) lede += " La marge de progression la plus nette se situe sur « " + lo.libelle + " ».";
+    p.appendChild(el("p", "b-lede", lede));
+
+    // Indice global, niveau et comparaison au T0
+    const head = el("div", "b-head");
+    const badge = el("div", "badge");
+    badge.appendChild(el("div", "lvl", r.niveau.nom));
+    badge.appendChild(el("div", "b-score", r.niveau.code + " · indice " + r.score + " / 100"));
+    const lad = el("div", "ladder");
+    NIVEAUX.slice().reverse().forEach(x => {
+      const t0Ici = r.t0 && niveauDe(r.t0.score).code === x.code;
+      const rr = el("div", "rung" + (x.code === r.niveau.code ? " on" : "") + (t0Ici && x.code !== r.niveau.code ? " was" : ""));
+      rr.appendChild(el("span", null, x.code + " · " + x.nom));
+      if (x.code === r.niveau.code) rr.appendChild(el("em", null, "Jour 1"));
+      else if (t0Ici) rr.appendChild(el("em", null, "T0"));
+      lad.appendChild(rr);
+    });
+    badge.appendChild(lad);
+    head.appendChild(badge);
+
+    const kpis = el("div", "kpis");
+    [
+      [r.t0 ? String(r.t0.score) : "–", "Indice au test de positionnement"],
+      [String(r.score), "Indice en fin de Jour 1"],
+      [r.deltaGlobal == null ? "–" : signe(r.deltaGlobal), "Points gagnés"],
+      [r.exo.score + "/6", "Critères de rédaction (auto-évaluation)"]
+    ].forEach(k => {
+      const d = el("div");
+      d.appendChild(el("b", null, k[0]));
+      d.appendChild(el("span", null, k[1]));
+      kpis.appendChild(d);
+    });
+    head.appendChild(kpis);
+    p.appendChild(head);
+
+    // Détail par axe : jauge Jour 1, repère T0, écart
+    p.appendChild(el("h3", null, "Détail par compétence"));
+    p.appendChild(el("p", "help", r.t0 ? "La barre indique votre score de fin de Jour 1, le trait vertical votre score au test de positionnement." : "Score de fin de Jour 1 par compétence."));
+    const fills = [];
+    r.axes.forEach(a => {
+      const w = el("div", "scale-kpi");
+      const hh = el("div", "scale-head");
+      hh.appendChild(el("div", "scale-name", a.libelle));
+      const val = el("div", "scale-val", a.score + " / 100");
+      if (a.delta != null) val.appendChild(el("span", "delta " + (a.delta > 0 ? "up" : a.delta < 0 ? "down" : "flat"), signe(a.delta)));
+      hh.appendChild(val);
+      w.appendChild(hh);
+      const g = el("div", "gauge " + (a.score >= 66 ? "g-ok" : a.score >= 46 ? "g-mid" : "g-low"));
+      const i = el("i");
+      g.appendChild(i);
+      if (a.t0 != null) {
+        const m = el("b", "t0mark");
+        m.style.left = Math.min(Math.max(a.t0, 0), 100) + "%";
+        m.title = "T0 : " + a.t0 + " %";
+        g.appendChild(m);
+      }
+      w.appendChild(g);
+      const t = el("div", "ticks");
+      NIVEAUX.forEach(n => { const s = el("span", null, n.code); s.style.left = n.min + "%"; t.appendChild(s); });
+      w.appendChild(t);
+      p.appendChild(w);
+      fills.push([i, a.score]);
+    });
+
+    p.appendChild(el("h3", null, "Montée en compétence depuis le T0"));
+    if (r.progres.length) {
+      const ul = el("ul", "items good");
+      r.progres.forEach(a => ul.appendChild(el("li", null, a.libelle + " : " + a.t0 + " % → " + a.score + " % (" + signe(a.delta) + ")")));
+      p.appendChild(ul);
+    } else {
+      p.appendChild(el("p", "muted", r.t0 ? "Pas de hausse mesurée sur cet échantillon de questions." : "Comparaison impossible : aucun test de positionnement à votre nom."));
+    }
+
+    p.appendChild(el("h3", null, "À consolider au Jour 2"));
+    if (r.aConsolider.length) {
+      const ul = el("ul", "items todo");
+      r.aConsolider.forEach(a => {
+        const li = el("li", null, a.libelle + " (" + a.score + " %" + (a.delta != null && a.delta < 0 ? ", " + signe(a.delta) + " depuis le T0" : "") + ")");
+        if (a.module) li.appendChild(el("span", "mod", a.module));
+        ul.appendChild(li);
+      });
+      p.appendChild(ul);
+    } else {
+      p.appendChild(el("p", "muted", "Aucune compétence sous le seuil de " + CONFIG.seuilFaible + " %, et aucune en recul."));
+    }
+
+    if (r.notions.length) {
+      p.appendChild(el("h3", null, "Notions du cours à revoir"));
+      const ul = el("ul", "notions");
+      r.notions.forEach(n => ul.appendChild(el("li", null, n)));
+      p.appendChild(ul);
+    }
+
+    if (r.exo.texte) {
+      p.appendChild(el("h3", null, "Votre demande rédigée"));
+      const y = el("div", "model");
+      y.appendChild(el("h4", null, r.exo.score + " critère" + (r.exo.score > 1 ? "s" : "") + " sur 6 selon votre auto-évaluation"));
+      y.appendChild(el("div", null, r.exo.texte));
+      p.appendChild(y);
+    }
+
+    if (CONFIG.afficherCorrection) {
+      p.appendChild(el("h3", null, "Correction"));
+      r.correction.forEach((c, i) => {
+        const d = el("div", "corr");
+        d.appendChild(el("p", null, (i + 1) + ". " + c.question));
+        d.appendChild(el("p", "verdict " + (c.juste ? "ok" : "ko"), c.juste ? "Bonne réponse" : "Réponse incorrecte"));
+        d.appendChild(el("p", "muted", "Votre réponse : " + c.votre.join(" ; ")));
+        if (!c.juste) d.appendChild(el("p", "muted", "Réponse attendue : " + c.bonnes.join(" ; ")));
+        if (c.explication) d.appendChild(el("p", null, c.explication));
+        p.appendChild(d);
+      });
+    }
+
+    if (CONFIG.messageFin) p.appendChild(el("p", "fin", CONFIG.messageFin));
+    if (r.t0) p.appendChild(el("p", "note", "Les questions du Jour 1 ne sont pas celles du test de positionnement : l’écart par compétence est un indicateur de tendance, pas une mesure au point près."));
+
+    const ref = el("p", "ref");
+    const d = new Date();
+    const deuxCh = x => String(x).padStart(2, "0");
+    ref.textContent = "Passé le " + deuxCh(d.getDate()) + "/" + deuxCh(d.getMonth() + 1) + "/" + d.getFullYear() +
+      " à " + deuxCh(d.getHours()) + "h" + deuxCh(d.getMinutes()) +
+      " · Durée : " + r.duree + " min · Référence : " + utilisateur;
+    p.appendChild(ref);
+
+    const aFin = el("div", "actions end noprint");
+    const bImp = el("button", "btn ghost", "Imprimer ou enregistrer en PDF");
+    bImp.type = "button";
+    bImp.addEventListener("click", () => window.print());
+    aFin.appendChild(bImp);
+    p.appendChild(aFin);
+
+    app.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([f, s]) => { f.style.width = Math.max(s, 1.5) + "%"; })));
+  }
+  function niveauDe(score) {
+    let n = NIVEAUX[0];
+    NIVEAUX.forEach(x => { if (score >= x.min) n = x; });
+    return n;
+  }
+
+  window.addEventListener("beforeunload", e => {
+    if (enCours) { e.preventDefault(); e.returnValue = ""; }
+  });
+
+  initialiser();
+})();
+</script>
+</body>
+</html>
